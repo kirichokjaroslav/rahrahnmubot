@@ -1,3 +1,4 @@
+import inspect
 from calendar import day_name
 from re import findall, finditer, search
 
@@ -19,55 +20,49 @@ def handle_command_start(message):
         {'name': message.from_user.first_name}
 
     cb_functions   = ('handle_button_self_add', 'handle_button_self_no')
-    inline_buttons = menus_challenge(telegram).create_yes_no_menu(
-        lang_storage, cb_data=cb_functions
-    )
-    telegram.send_message(
-                    chat_id=message.from_user.id,
-                    text=f"{show_message}",
-                    reply_markup=inline_buttons,
-                    parse_mode='html')
+    inline_buttons =\
+        menus_challenge(telegram).create_yes_no_menu(lang_storage, cb_data=cb_functions)
+    telegram.send_message(chat_id=message.from_user.id,
+                          text=f"{show_message}",
+                          reply_markup=inline_buttons,
+                          parse_mode='html')
 
 
 # handle selectable 'Yes'
 @telegram.callback_query_handler(
     func=lambda cb_function: 'button_self_add' in cb_function.data)
 def handle_button_self_add(cb_function):
-    lang_storage = languages_challenge(cb_function.from_user.language_code)
-    
     server.app_context().push()
-    
+    lang_storage = languages_challenge(cb_function.from_user.language_code)
+     
     from ..models.profiles import UserProfileModel
-    user_profile = UserProfileModel.get_user(
-        from_user_id=f'{cb_function.from_user.id}')
+    user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
     if user_profile:
         show_message   = lang_storage['messages'].get('message_user_exists') 
-        inline_buttons = menus_challenge(telegram).create_backward_menu(
-            lang_storage, cb_data=str('handle_button_main_menu')
-        )       
-        telegram.edit_message_text(
-                        text=f'{show_message}',
-                        chat_id=cb_function.from_user.id,
-                        message_id=cb_function.message.message_id,
-                        parse_mode='html',
-                        reply_markup=inline_buttons)
+        inline_buttons =\
+            menus_challenge(telegram).create_backward_menu(lang_storage,
+                                                           cb_data=str('handle_button_main_menu'))       
+        telegram.edit_message_text(text=f'{show_message}',
+                                   chat_id=cb_function.from_user.id,
+                                   message_id=cb_function.message.message_id,
+                                   parse_mode='html',
+                                   reply_markup=inline_buttons)
         return
     else:
         show_message = lang_storage['messages'].get('message_login') 
-        telegram.edit_message_text(
-                        text=f'{show_message}',
-                        chat_id=cb_function.from_user.id,
-                        message_id=cb_function.message.message_id,
-                        parse_mode='html')
+        telegram.edit_message_text(text=f'{show_message}',
+                                   chat_id=cb_function.from_user.id,
+                                   message_id=cb_function.message.message_id,
+                                   parse_mode='html')
 
     user_create = UserProfileModel(**{
         'from_user_id': f'{cb_function.from_user.id}',
         'first_name':   f'{cb_function.from_user.first_name or str()}',
-        'last_name':    f'{cb_function.from_user.last_name  or str()}'}
-    )
+        'last_name':    f'{cb_function.from_user.last_name  or str()}'})
     user_create.save()
 
-    telegram.register_next_step_handler(cb_function.message, sign_up_login)
+    telegram.register_next_step_handler(cb_function.message,
+                                        sign_up_login)
 
 
 # handle selectable 'No'
@@ -82,11 +77,9 @@ def handle_button_self_no(cb_function):
 def handle_button_main_menu(cb_function):
     lang_storage = languages_challenge(cb_function.from_user.language_code)    
 
-    show_message   = (
-        f"{lang_storage['messages'].get('message_welcome')}"    
-        f"\n"
-        f"{lang_storage['messages'].get('message_select_menu')}"
-    )
+    show_message = (f"{lang_storage['messages'].get('message_welcome')}"    
+                    f"\n"
+                    f"{lang_storage['messages'].get('message_select_menu')}")
     inline_buttons = menus_challenge(telegram).create_main_menu(lang_storage)   
     telegram.edit_message_text(
                     text=f'{show_message}',
@@ -101,16 +94,15 @@ def handle_button_main_menu(cb_function):
 def handle_button_updates(cb_function):
     lang_storage = languages_challenge(cb_function.from_user.language_code)     
     
-    show_message   = lang_storage['messages'].get('message_updates')    
-    inline_buttons = menus_challenge(telegram).create_backward_menu(
-        lang_storage, cb_data=str('handle_button_main_menu')
-    )
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)  
+    show_message = lang_storage['messages'].get('message_updates')    
+    inline_buttons =\
+        menus_challenge(telegram).create_backward_menu(lang_storage,
+                                                       cb_data=str('handle_button_main_menu'))
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)  
 
 
 @telegram.callback_query_handler(
@@ -118,16 +110,15 @@ def handle_button_updates(cb_function):
 def handle_button_feedback(cb_function):
     lang_storage = languages_challenge(cb_function.from_user.language_code)
 
-    show_message   = lang_storage['messages'].get('message_feedback')    
-    inline_buttons = menus_challenge(telegram).create_backward_menu(
-        lang_storage, cb_data=str('handle_button_main_menu')
-    )
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)    
+    show_message = lang_storage['messages'].get('message_feedback')    
+    inline_buttons =\
+        menus_challenge(telegram).create_backward_menu(lang_storage,
+                                                       cb_data=str('handle_button_main_menu'))
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)    
 
 
 @telegram.callback_query_handler(
@@ -136,57 +127,50 @@ def handle_button_settings(cb_function):
     lang_storage = languages_challenge(cb_function.from_user.language_code)
     
     show_message = lang_storage['messages'].get('message_settings')    
-    cb_functions = (
-        'handle_button_self_add',
-        'handle_button_self_delete', 
-        'handle_button_main_menu'
-    )
-    inline_buttons = menus_challenge(telegram).create_settings_menu(
-        lang_storage, cb_data=cb_functions)
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)  
+    cb_functions = ('handle_button_self_add',
+                    'handle_button_self_delete', 
+                    'handle_button_main_menu')
+    inline_buttons =\
+        menus_challenge(telegram).create_settings_menu(lang_storage,
+                                                       cb_data=cb_functions)
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)  
 
 
 @telegram.callback_query_handler(
     func=lambda cb_function: 'button_self_delete' in cb_function.data)
 def handle_button_self_delete(cb_function):
+    server.app_context().push()
     lang_storage = languages_challenge(cb_function.from_user.language_code)
     
-    server.app_context().push()
-
     from ..models.profiles import UserProfileModel
-    user_profile = UserProfileModel.get_user(
-        from_user_id=f'{cb_function.from_user.id}')
+    user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
     if user_profile: user_profile.delete()
     
     show_message = lang_storage['messages'].get('message_completed') 
-    telegram.answer_callback_query(
-                    cb_function.id,
-                    show_alert=True,
-                    text=f'{show_message}')
+    telegram.answer_callback_query(cb_function.id,
+                                   show_alert=True,
+                                   text=f'{show_message}')
 
 
 @telegram.callback_query_handler(
     func=lambda cb_function: 'button_student_schedule' in cb_function.data)
 def handle_button_student_schedule(cb_function):  
+    server.app_context().push()
     lang_storage = languages_challenge(cb_function.from_user.language_code)
 
-    server.app_context().push()
-
     show_message = lang_storage['messages'].get('message_day_of_week')
-    inline_buttons = menus_challenge(telegram).create_days_of_week_menu(
-        lang_storage, cb_data=tuple(day_name)
-    )
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    inline_buttons =\
+        menus_challenge(telegram).create_days_of_week_menu(lang_storage,
+                                                           cb_data=tuple(day_name))
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
@@ -194,13 +178,12 @@ def handle_button_student_schedule(cb_function):
 def handle_button_days_of_week(cb_function):
     lang_storage = languages_challenge(cb_function.from_user.language_code)
     
-    inline_buttons = menus_challenge(telegram).create_backward_menu(
-        lang_storage, cb_data=str('handle_button_student_schedule')
-    )   
-    
     try:
         schedule_days = extract_schedule(cb_function)
         assert schedule_days
+        
+        schedule_day = schedule_days.get(cb_function.data)
+        assert schedule_day        
     except (AssertionError, Exception) as error:
         exception_message_error(cb_function, lang_storage, error); return 
 
@@ -221,28 +204,24 @@ def handle_button_days_of_week(cb_function):
                 'lesson_teach': f"{8*tab}{lang_storage['messages'].get('message_lesson_teach')}"}        
         ]
 
-    schedule_day = schedule_days.get(cb_function.data)
-    if not schedule_day:
-        show_message = lang_storage['messages'].get('message_oops')    
-    else:
-        show_message = f"{lang_storage['messages'].get('message_lesson_caption')}"
-        for lesson in schedule_day: show_message += ''.join(lesson_specifically(lesson))
-
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    show_message = f"{lang_storage['messages'].get('message_lesson_caption')}"
+    for lesson in schedule_day: show_message += ''.join(lesson_specifically(lesson))
+    inline_buttons =\
+        menus_challenge(telegram).create_backward_menu(lang_storage,
+                                                       cb_data=str('handle_button_student_schedule'))
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
     func=lambda cb_function: 'button_student_rating' in cb_function.data)
 def handle_button_student_rating(cb_function):
-    lang_storage = languages_challenge(cb_function.from_user.language_code)    
-    
     server.app_context().push()
-
+    lang_storage = languages_challenge(cb_function.from_user.language_code)    
+   
     from pendulum import now
     from ..models.profiles import UserProfileModel
     user_profile = UserProfileModel.get_user(
@@ -258,40 +237,34 @@ def handle_button_student_rating(cb_function):
 
     show_message = lang_storage['messages'].get('message_learning_year')
     start_date = int(user_profile.learning_start_date)
-    inline_buttons = menus_challenge(telegram).create_learning_year_menu(
-        lang_storage, cb_data=(item for item in range(start_date, now().year + 1))
-    )
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    inline_buttons =\
+        menus_challenge(telegram).create_learning_year_menu(lang_storage,
+                                                            cb_data=\
+                                  (item for item in range(start_date, now().year + 1)))
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
-    func=lambda cb_function: cb_function.data in
-    available_year(cb_function)
-)
+    func=lambda cb_function: cb_function.data in available_year(cb_function))
 def handle_button_year(cb_function):
+    server.app_context().push()
     lang_storage = languages_challenge(cb_function.from_user.language_code)    
 
-    server.app_context().push()
-
     cb_functions = (item for item in constants.SEMESTERS.keys())
-    inline_buttons = menus_challenge(telegram).create_semester_menu(
-        lang_storage, cb_data=cb_functions
-    )
+    inline_buttons =\
+        menus_challenge(telegram).create_semester_menu(lang_storage, cb_data=cb_functions)
 
     try:
         from ..models.profiles import UserProfileModel
-        user_profile = UserProfileModel.get_user(
-            from_user_id=f'{cb_function.from_user.id}')
+        user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
         assert user_profile
         
         from ..models.profiles import UserRatingModel
-        user_rating = UserRatingModel.get_results_for_user(
-            user_profile.id) or \
+        user_rating = UserRatingModel.get_results_for_user(user_profile.id) or \
             UserRatingModel(**{
                 'user_id':      user_profile.id,
                 'choosed_year': int(cb_function.data)}
@@ -307,42 +280,36 @@ def handle_button_year(cb_function):
         exception_message_error(cb_function, lang_storage, error); return 
 
     show_message = lang_storage['messages'].get('message_semester')
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
     func=lambda cb_function: cb_function.data in 
-    (item for item in constants.SEMESTERS.keys())
-)
+    (item for item in constants.SEMESTERS.keys()))
 def handle_button_semester(cb_function):
-    lang_storage = languages_challenge(cb_function.from_user.language_code)
- 
     server.app_context().push()
+    lang_storage = languages_challenge(cb_function.from_user.language_code)
 
-    cb_functions = (
-        'handle_button_academic_rating',
-        'handle_button_academic_module'
-    )
-    inline_buttons = menus_challenge(telegram).create_rating_module_menu(
-        lang_storage, cb_data=cb_functions)
+    cb_functions = ('handle_button_academic_rating',
+                    'handle_button_academic_module')
+    inline_buttons =\
+        menus_challenge(telegram).create_rating_module_menu(lang_storage, cb_data=cb_functions)
 
     try:
         from ..models.profiles import UserProfileModel
-        user_profile = UserProfileModel.get_user(
-            from_user_id=f'{cb_function.from_user.id}')
+        user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
         assert user_profile
         
         from ..models.profiles import UserRatingModel
         user_rating = UserRatingModel.get_results_for_user(user_profile.id) or \
-                        UserRatingModel(**{
-                            'user_id': user_profile.id,
-                            'choosed_semester': constants.SEMESTERS.get(cb_function.data)}
-                        )
+            UserRatingModel(**{
+                'user_id': user_profile.id,
+                'choosed_semester': constants.SEMESTERS.get(cb_function.data)}
+            )
         assert user_rating
         user_rating.choosed_semester = constants.SEMESTERS.get(cb_function.data)
 
@@ -354,12 +321,11 @@ def handle_button_semester(cb_function):
         exception_message_error(cb_function, lang_storage, error); return 
 
     show_message = lang_storage['messages'].get('message_rating_or_module')
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
@@ -391,24 +357,21 @@ def handle_button_academic_rating(cb_function):
     start_lesson, finish_lesson = min(pages_enumerate), max(pages_enumerate)
     
     cb_functions   = (str('page_rating:{page}'), str('lesson_rating:{page}:{lesson}'))
-    inline_buttons = menus_challenge(telegram).create_pagination_rating(
-                                                    lang_storage, 1, pages_count, start_lesson,
-                                                    finish_lesson, cb_data=cb_functions
-    )
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    inline_buttons =\
+        menus_challenge(telegram).create_pagination_rating(lang_storage, 1, pages_count, start_lesson,
+                                                           finish_lesson, cb_data=cb_functions)
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
     func=lambda cb_function: 'page_rating' in cb_function.data)
 def handle_button_page_rating(cb_function):
-    lang_storage = languages_challenge(cb_function.from_user.language_code)
-
     server.app_context().push()
+    lang_storage = languages_challenge(cb_function.from_user.language_code)
 
     try:
         from ..models.profiles import UserProfileModel
@@ -440,24 +403,21 @@ def handle_button_page_rating(cb_function):
     start_lesson, finish_lesson = min(pages_enumerate), max(pages_enumerate)
 
     cb_functions   = (str('page_rating:{page}'), str('lesson_rating:{page}:{lesson}'))
-    inline_buttons = menus_challenge(telegram).create_pagination_rating(
-                                                    lang_storage, int(page), pages_count,
-                                                    start_lesson, finish_lesson, cb_data=cb_functions
-    )
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    inline_buttons =\
+        menus_challenge(telegram).create_pagination_rating(lang_storage, int(page), pages_count,
+                                                           start_lesson, finish_lesson, cb_data=cb_functions)
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
     func=lambda cb_function: 'lesson_rating' in cb_function.data)
 def handle_button_lesson_rating(cb_function):
-    lang_storage = languages_challenge(cb_function.from_user.language_code)
-
     server.app_context().push()
+    lang_storage = languages_challenge(cb_function.from_user.language_code)
 
     try:
         from ..models.profiles import UserProfileModel
@@ -496,16 +456,14 @@ def handle_button_lesson_rating(cb_function):
     for lesson in user_rating.rating: 
         if str(lesson_number) in lesson:
             show_message = lesson_specifically(lesson.get(str(lesson_number))); break
-
-    inline_buttons = menus_challenge(telegram).create_backward_menu(
-        lang_storage, cb_data=str('page_rating:{page}').format(page=page) 
-    )
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    inline_buttons =\
+        menus_challenge(telegram).create_backward_menu(lang_storage,
+                                                       cb_data=str('page_rating:{page}').format(page=page))
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
@@ -535,28 +493,24 @@ def handle_button_academic_module(cb_function):
                 'module_second': lang_storage['messages'].get('message_module_second')},      
         ]
 
-    show_message = f"{lang_storage['messages'].get('message_module_caption')}"
-    inline_buttons = menus_challenge(telegram).create_pagination_module(
-        lang_storage, 1, pages_count, cb_data=str('page_module:{page}')
-    )
+    show_message   = f"{lang_storage['messages'].get('message_module_caption')}"
+    inline_buttons = menus_challenge(telegram).create_pagination_module(lang_storage, 1, pages_count,
+                                                                        cb_data=str('page_module:{page}'))
     start_page, *_ = pages_imaginary
     for lesson in pages_imaginary[pages_imaginary.index(start_page)]: 
         show_message += ''.join(lesson_specifically(lesson))
-
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 @telegram.callback_query_handler(
     func=lambda cb_function: 'page_module' in cb_function.data)
 def handle_button_page_module(cb_function):
-    lang_storage = languages_challenge(cb_function.from_user.language_code)
-
     server.app_context().push()
+    lang_storage = languages_challenge(cb_function.from_user.language_code)
 
     try:
         from ..models.profiles import UserProfileModel
@@ -587,103 +541,92 @@ def handle_button_page_module(cb_function):
     page = findall(r'\d+', cb_function.data).pop()
 
     show_message = f"{lang_storage['messages'].get('message_module_caption')}"
-    inline_buttons = menus_challenge(telegram).create_pagination_module(
-        lang_storage, int(page), pages_count, cb_data=str('page_module:{page}')
-    )
+    inline_buttons = menus_challenge(telegram).create_pagination_module(lang_storage, int(page), pages_count,
+                                                                        cb_data=str('page_module:{page}'))
     for lesson in pages_imaginary[int(page) - 1]:
         show_message += ''.join(lesson_specifically(lesson))
     try:
-        telegram.edit_message_text(
-                        text=f'{show_message}',
-                        chat_id=cb_function.from_user.id,
-                        message_id=cb_function.message.message_id,
-                        parse_mode='html',
-                        reply_markup=inline_buttons)
+        telegram.edit_message_text(text=f'{show_message}',
+                                   chat_id=cb_function.from_user.id,
+                                   message_id=cb_function.message.message_id,
+                                   parse_mode='html',
+                                   reply_markup=inline_buttons)
     except telebot.apihelper.ApiException as error:
         logger.error(f'{error}')
 
 
 @telegram.message_handler(
     func=lambda message: True, content_types=['text']) 
-def sign_up_login(message):  
-    lang_storage = languages_challenge(message.from_user.language_code) 
-    
+def sign_up_login(message):   
     server.app_context().push()
-
+    lang_storage = languages_challenge(message.from_user.language_code) 
+  
     from ..models.profiles import UserProfileModel
-    user_profile = UserProfileModel.get_user(
-        from_user_id=f'{message.from_user.id}')
+    user_profile = UserProfileModel.get_user(from_user_id=\
+                                             f"{message.from_user.id}")
     if user_profile:
-        user_profile.update_profile(**{'username': f'{message.text.strip()}'})
+        user_profile.update_profile(**{'username': f"{message.text.strip()}"})
         user_profile.save()
 
     show_message = lang_storage['messages'].get('message_password') 
-    telegram.send_message(
-                    chat_id=message.chat.id,
-                    text=f'{show_message}',
-                    parse_mode='html')
-    
+    telegram.send_message(chat_id=message.chat.id,
+                          text=f"{show_message}",
+                          parse_mode='html')
+
     telegram.register_next_step_handler(message, sign_up_password)
 
 
 @telegram.message_handler(
     func=lambda message: True, content_types=['text'])
 def sign_up_password(message):
-    lang_storage = languages_challenge(message.from_user.language_code) 
-    
     server.app_context().push()
-
+    lang_storage = languages_challenge(message.from_user.language_code) 
+  
     from ..models.profiles import UserProfileModel
-    user_profile = UserProfileModel.get_user(
-        from_user_id=f'{message.from_user.id}')
+    user_profile = UserProfileModel.get_user(from_user_id=f'{message.from_user.id}')
     if user_profile:
-        user_profile.set_password(
-            password=f'{message.text}', salt=f'{message.from_user.id}')
+        user_profile.set_password(password=f'{message.text}',
+                                  salt=f'{message.from_user.id}')
         user_profile.save()
 
     show_message = lang_storage['messages'].get('message_learning') 
-    telegram.send_message(
-                    chat_id=message.chat.id,
-                    text=f'{show_message}',
-                    parse_mode='html')
-    
+    telegram.send_message(chat_id=message.chat.id,
+                          text=f'{show_message}',
+                          parse_mode='html')
+  
     telegram.register_next_step_handler(message, sign_up_learning)
 
 
 @telegram.message_handler(
     func=lambda message: True, content_types=['text'])
 def sign_up_learning(message):
-    lang_storage = languages_challenge(message.from_user.language_code) 
-    
     server.app_context().push()
+    lang_storage = languages_challenge(message.from_user.language_code) 
 
     from ..models.profiles import UserProfileModel
-    user_profile = UserProfileModel.get_user(
-        from_user_id=f'{message.from_user.id}')
+    user_profile = UserProfileModel.get_user(from_user_id=f'{message.from_user.id}')
     if user_profile:
         user_profile.update_profile(**{'learning_start_date': f'{message.text.strip()}'})
         user_profile.save()
 
-    show_message = lang_storage['messages'].get('message_auth_complete') 
-    inline_buttons = menus_challenge(telegram).create_lets_go_menu(
-        lang_storage, cb_data=str('handle_button_main_menu')
-    )
-    telegram.send_message(
-                    chat_id=message.chat.id,
-                    text=f'{show_message}' % {'name': message.from_user.first_name},
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    show_message   = lang_storage['messages'].get('message_auth_complete') 
+    inline_buttons =\
+        menus_challenge(telegram).create_lets_go_menu(lang_storage,
+                                                      cb_data=str('handle_button_main_menu'))
+    telegram.send_message(chat_id=message.chat.id,
+                          text=f'{show_message}' % {'name': message.from_user.first_name},
+                          parse_mode='html',
+                          reply_markup=inline_buttons)
 
 
 def available_year(cb_function):
     from ..models.profiles import UserProfileModel
-    user_profile = UserProfileModel.get_user(
-        from_user_id=f'{cb_function.from_user.id}')
+    user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
     if not user_profile: return []
+    
     from pendulum import now 
     date_start = int(user_profile.learning_start_date)
-    return [
-        str(item) for item in range(date_start, now().year + 1)]
+    return [str(item) for item in range(date_start, now().year + 1)]
 
 
 def extractor(user_profile, parser_engine) -> bool:          
@@ -709,11 +652,10 @@ def extract_schedule(cb_function):
         from parsers import acs_parser
         
         show_message = lang_storage['messages'].get('message_wait_schedule')
-        telegram.edit_message_text(
-                        text=f'{show_message}',
-                        chat_id=cb_function.from_user.id,
-                        message_id=cb_function.message.message_id,
-                        parse_mode='html')
+        telegram.edit_message_text(text=f'{show_message}',
+                                   chat_id=cb_function.from_user.id,
+                                   message_id=cb_function.message.message_id,
+                                   parse_mode='html')
 
         return extractor(user_profile, acs_parser.parse_schedule)
     
@@ -756,11 +698,10 @@ def extract_rating(cb_function):
         from parsers import acs_parser
         
         show_message = lang_storage['messages'].get('message_wait_rating')
-        telegram.edit_message_text(
-                        text=f'{show_message}',
-                        chat_id=cb_function.from_user.id,
-                        message_id=cb_function.message.message_id,
-                        parse_mode='html')
+        telegram.edit_message_text(text=f'{show_message}',
+                                   chat_id=cb_function.from_user.id,
+                                   message_id=cb_function.message.message_id,
+                                   parse_mode='html')
         
         return extractor(user_profile, acs_parser.parse_rating)
 
@@ -783,11 +724,10 @@ def extract_module(cb_function):
         from parsers import acs_parser
         
         show_message = lang_storage['messages'].get('message_wait_module')
-        telegram.edit_message_text(
-                        text=f'{show_message}',
-                        chat_id=cb_function.from_user.id,
-                        message_id=cb_function.message.message_id,
-                        parse_mode='html')
+        telegram.edit_message_text(text=f'{show_message}',
+                                   chat_id=cb_function.from_user.id,
+                                   message_id=cb_function.message.message_id,
+                                   parse_mode='html')
         
         return extractor(user_profile, acs_parser.parse_module)
     
@@ -803,16 +743,15 @@ def extract_module(cb_function):
 def exception_message_error(cb_function, lang_storage, error=str()):
     logger.exception(f"{error}")
 
-    show_message = lang_storage['messages'].get('message_oops')
-    inline_buttons = menus_challenge(telegram).create_backward_menu(
-        lang_storage, cb_data=str('handle_button_main_menu')
-    )        
-    telegram.edit_message_text(
-                    text=f'{show_message}',
-                    chat_id=cb_function.from_user.id,
-                    message_id=cb_function.message.message_id,
-                    parse_mode='html',
-                    reply_markup=inline_buttons)
+    show_message   = lang_storage['messages'].get('message_oops')
+    inline_buttons =\
+        menus_challenge(telegram).create_backward_menu(lang_storage,
+                                                       cb_data=str('handle_button_main_menu'))        
+    telegram.edit_message_text(text=f'{show_message}',
+                               chat_id=cb_function.from_user.id,
+                               message_id=cb_function.message.message_id,
+                               parse_mode='html',
+                               reply_markup=inline_buttons)
 
 
 def user_profile_suitable(user_id):

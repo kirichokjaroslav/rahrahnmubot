@@ -19,8 +19,7 @@ server = Flask(__name__)
 
 db = SQLAlchemy()
 debugger = DebugToolbarExtension()
-phantom_thread_pool = PhantomJSThreadPool(
-    constants.PHANTOMJS_THREADS_COUNT)
+phantom_thread_pool = PhantomJSThreadPool(constants.PHANTOMJS_THREADS_COUNT)
 
 choosed_configurator = ConfiguratorFactory.create_configurator(
         Phase.DEVELOPMENT.value)

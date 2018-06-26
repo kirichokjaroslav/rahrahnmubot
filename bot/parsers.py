@@ -34,10 +34,9 @@ class ACSParser(object):
         desired_capabilities = dict(DesiredCapabilities.PHANTOMJS)
         desired_capabilities['phantomjs.page.settings.loadImages'] = False
         try:
-            phantom = PhantomJS(
-                executable_path=constants.PHANTOMJS_EXEC,
-                desired_capabilities=desired_capabilities,
-                service_args=['--ignore-ssl-errors=true'])
+            phantom = PhantomJS(executable_path=constants.PHANTOMJS_EXEC,
+                                desired_capabilities=desired_capabilities,
+                                service_args=['--ignore-ssl-errors=true'])
             phantom.implicitly_wait(constants.PHANTOMJS_IMPLICITLY_WAIT)
             return phantom
         except WebDriverException as error:
@@ -216,10 +215,8 @@ class ACSParser(object):
 
             tag_a_self = phantom.find_element_by_id('sidebar')\
                 .find_element_by_xpath("//a[contains(@href, 'self/student')]")
-            phantom.get(
-                (
-                    f"{tag_a_self.get_attribute('href')}?"
-                    f"year={user_rating.choosed_year }&sem={user_rating.choosed_semester}"))
+            phantom.get((f"{tag_a_self.get_attribute('href')}?"
+                         f"year={user_rating.choosed_year }&sem={user_rating.choosed_semester}"))
             tag_tab_acc_journal = phantom.find_element_by_xpath(f"//div[contains(@id, 'tab_{self._tabs.get('rating')}')]")     
 
             soup = BeautifulSoup(tag_tab_acc_journal.get_attribute('innerHTML'), 'html.parser')
@@ -254,10 +251,8 @@ class ACSParser(object):
 
             tag_a_self = phantom.find_element_by_id('sidebar')\
                 .find_element_by_xpath("//a[contains(@href, 'self/student')]")
-            phantom.get((
-                f"{tag_a_self.get_attribute('href')}?"
-                f"year={user_module.choosed_year }&sem={user_module.choosed_semester}")
-            )
+            phantom.get((f"{tag_a_self.get_attribute('href')}?"
+                         f"year={user_module.choosed_year }&sem={user_module.choosed_semester}"))
             tag_tab_table = phantom.find_element_by_xpath(f"//div[contains(@id, 'tab_{self._tabs.get('module')}')]")     
 
             soup = BeautifulSoup(tag_tab_table.get_attribute('innerHTML'), 'html.parser')

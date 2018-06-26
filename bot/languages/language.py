@@ -1,7 +1,8 @@
 import json
 import inspect
 
-support_languages = {"en": "en", "ua": "ua", "ru": "ru",} 
+support_languages = {"en": "en", "ua": "ua", "ru": "ru"} 
+
 
 class LanguagesChallenge(object):
 
@@ -22,7 +23,7 @@ class LanguagesChallenge(object):
             return support_languages.get("en")
         
         if "-" in language_code:
-            language_code = language_code.split("-")[0]
+            language_code, *_ = language_code.split("-")
         
         return support_languages.get(language_code, support_languages.get("en"))
 
