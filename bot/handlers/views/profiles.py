@@ -179,11 +179,11 @@ def handle_button_days_of_week(cb_function):
     lang_storage = languages_challenge(cb_function.from_user.language_code)
     
     try:
-        schedule_days = extract_schedule(cb_function)
-        assert schedule_days
+        all_schedule = extract_schedule(cb_function)
+        assert(all_schedule)
         
-        schedule_day = schedule_days.get(cb_function.data)
-        assert schedule_day        
+        specific_schedule = all_schedule.get(cb_function.data)
+        assert(specific_schedule)        
     except (AssertionError, Exception) as error:
         exception_message_error(cb_function, lang_storage, error); return 
 
@@ -227,11 +227,11 @@ def handle_button_student_rating(cb_function):
     user_profile = UserProfileModel.get_user(
         from_user_id=f'{cb_function.from_user.id}')
     try:
-        assert user_profile
-        assert user_profile.learning_start_date.isdigit()
-        assert\
+        assert(user_profile)
+        assert(user_profile.learning_start_date.isdigit())
+        assert(\
             (int(now().year) - int(user_profile.learning_start_date))\
-            <= constants.PERIOD_OF_STUDY
+            <= constants.PERIOD_OF_STUDY)
     except (AssertionError, Exception) as error:
         exception_message_error(cb_function, lang_storage, error); return 
 
@@ -261,7 +261,7 @@ def handle_button_year(cb_function):
     try:
         from ..models.profiles import UserProfileModel
         user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
-        assert user_profile
+        assert(user_profile)
         
         from ..models.profiles import UserRatingModel
         user_rating = UserRatingModel.get_results_for_user(user_profile.id) or \
@@ -269,7 +269,7 @@ def handle_button_year(cb_function):
                 'user_id':      user_profile.id,
                 'choosed_year': int(cb_function.data)}
             )
-        assert user_rating
+        assert(user_rating)
         user_rating.choosed_year = int(cb_function.data)
 
         from pendulum import now
@@ -302,7 +302,7 @@ def handle_button_semester(cb_function):
     try:
         from ..models.profiles import UserProfileModel
         user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
-        assert user_profile
+        assert(user_profile)
         
         from ..models.profiles import UserRatingModel
         user_rating = UserRatingModel.get_results_for_user(user_profile.id) or \
@@ -310,7 +310,7 @@ def handle_button_semester(cb_function):
                 'user_id': user_profile.id,
                 'choosed_semester': constants.SEMESTERS.get(cb_function.data)}
             )
-        assert user_rating
+        assert(user_rating)
         user_rating.choosed_semester = constants.SEMESTERS.get(cb_function.data)
 
         from pendulum import now
@@ -336,10 +336,9 @@ def handle_button_academic_rating(cb_function):
     
     try:
         rating = extract_rating(cb_function)
-        assert rating
+        assert(rating)
 
-        # if rating information is extract, then
-        # split lessons to the pages
+        # if rating information is extract, then split lessons to the pages
         pages_count = round(len(rating) / constants.PAGES_COUNT) or 1
         pages_imaginary = array_split(rating, pages_count)
     except (AssertionError, Exception) as error:
@@ -376,14 +375,13 @@ def handle_button_page_rating(cb_function):
     try:
         from ..models.profiles import UserProfileModel
         user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
-        assert user_profile
+        assert(user_profile)
         
         from ..models.profiles import UserRatingModel
         user_rating = UserRatingModel.get_results_for_user(user_id=f'{user_profile.id}')
-        assert user_rating
+        assert(user_rating)
 
-        # if rating information is extract, then
-        # split lessons to the pages
+        # if rating information is extract, then split lessons to the pages
         pages_count = round(len(user_rating.rating) / constants.PAGES_COUNT) or 1
         pages_imaginary = array_split(user_rating.rating, pages_count)
     except (AssertionError, Exception) as error:
@@ -422,11 +420,11 @@ def handle_button_lesson_rating(cb_function):
     try:
         from ..models.profiles import UserProfileModel
         user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
-        assert user_profile
+        assert(user_profile)
         
         from ..models.profiles import UserRatingModel
         user_rating = UserRatingModel.get_results_for_user(user_id=f'{user_profile.id}')
-        assert user_rating
+        assert(user_rating)
     except (AssertionError, Exception) as error:
         exception_message_error(cb_function, lang_storage, error); return  
 
@@ -474,10 +472,9 @@ def handle_button_academic_module(cb_function):
     
     try:
         module = extract_module(cb_function)
-        assert module
+        assert(module)
 
-        # if module information is extract, then
-        # split lessons to the pages
+        # if module information is extract, then split lessons to the pages
         pages_count = round(len(module) / constants.PAGES_COUNT) or 1
         pages_imaginary = array_split(module, pages_count)
     except (AssertionError, Exception) as error:
@@ -515,14 +512,13 @@ def handle_button_page_module(cb_function):
     try:
         from ..models.profiles import UserProfileModel
         user_profile = UserProfileModel.get_user(from_user_id=f'{cb_function.from_user.id}')
-        assert user_profile
+        assert(user_profile)
         
         from ..models.profiles import UserRatingModel
         user_module = UserRatingModel.get_results_for_user(user_id=f'{user_profile.id}')
-        assert user_module
+        assert(user_module)
 
-        # if module information is extract, then
-        # split lessons to the pages
+        # if module information is extract, then split lessons to the pages
         pages_count = round(len(user_module.module) / constants.PAGES_COUNT) or 1
         pages_imaginary = array_split(user_module.module, pages_count)
     except (AssertionError, Exception) as error:
