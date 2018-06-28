@@ -71,7 +71,7 @@ try:
         constants.WEBHOOK_SETUP_PRIORITY, set_webhook, (telegram,)
     )
     scheduler.run()
-    logger.debug('* Telegram bot: The first stage of launch!')
+    logger.debug('* Telegram bot: get starting command!')
 except Exception as error:
     logger.exception(f'{error}')
     time_str = pendulum.now().to_datetime_string()
