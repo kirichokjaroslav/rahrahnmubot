@@ -39,9 +39,8 @@ logger.addHandler(handler)
 constants = Constants()
 
 constants.BASE_DIR = f'{os.path.dirname(os.path.realpath(__file__))}'
-constants.DEBUG = True
 constants.API_TOKEN = ''
-if constants.DEBUG:
+if __debug__:
     # ngrok forwarding
     constants.WEBHOOK_HOST = ''
 else:
@@ -145,6 +144,7 @@ class BaseApplicationConfigurator(metaclass=ABCMeta):
         server.config.update({
             'SQLALCHEMY_DATABASE_URI': sqlalchemy_database_uri,
             'TESTING': False,
+            'DEBUG': __debug__,
             'DEBUG_TB_ENABLED': False,
             'DEBUG_TB_INTERCEPT_REDIRECTS': False,
             'JWT_BLACKLIST_ENABLED': True,
