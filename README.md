@@ -16,5 +16,5 @@ With the help of the bot **you can see**:
    Jaroslav Kirichok, @kirichokjaroslav
 
 
-------
-*©2017, Includium Tech*
+___
+©2017, Includium Tech. All rights reserved.
