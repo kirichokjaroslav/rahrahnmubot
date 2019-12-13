@@ -1,7 +1,10 @@
-**- About -**
+# Rah-Rah NMU Bot
 
 
-   **Rah-Rah NMU Bot** - is an automated telegram-bot that works with **ACS** and provides useful educational information to students of NMU in a light and extremely convenient form. The **bot's** mission is to improve the **quality** and **speed** of organizational information received by students through the use of modern information technologies.
+**: About :**
+
+
+**Rah-Rah NMU Bot** - is an automated telegram-bot that works with **ACS** and provides useful educational information to students of NMU in a light and extremely convenient form. The **bot's** mission is to improve the **quality** and **speed** of organizational information received by students through the use of modern information technologies.
 
 With the help of the bot **you can see**:
 * student's **personal** schedule
@@ -11,9 +14,9 @@ With the help of the bot **you can see**:
 * working group **curriculum**
 
 
-**- Author's -**
+**: Author's :**
 
-   Jaroslav Kirichok, @kirichokjaroslav
+Jaroslav Kirichok
 
 
 ___
