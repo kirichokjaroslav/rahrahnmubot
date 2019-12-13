@@ -8,3 +8,6 @@ With the help of the bot **you can see**:
 * teacher schedules
 * information about free **classrooms**
 * working group **curriculum**
+
+------
+*©2017, Includium Tech*
