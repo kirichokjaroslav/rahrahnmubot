@@ -20,4 +20,4 @@ Jaroslav Kirichok, Oleg Kirichok
 
 
 ___
-©2017 Includium GmbH. All rights reserved.
+©2017, Includium GmbH. All rights reserved.
