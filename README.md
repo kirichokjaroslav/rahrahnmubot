@@ -17,4 +17,6 @@ With the help of the bot **you can see**:
 
 
 ___
-©2017, Includium GmbH. All Rights Reserved.
+©2017 Includium GmbH.
+
+All Rights Reserved.
