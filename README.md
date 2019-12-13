@@ -16,7 +16,7 @@ With the help of the bot **you can see**:
 
 **: Author's :**
 
-Jaroslav Kirichok
+Jaroslav Kirichok, Oleg Kirichok
 
 
 ___
